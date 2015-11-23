@@ -22,8 +22,8 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
-app.listen(8084, function () {    
-    console.log('Express server listening on port 8084');
+app.listen(8080, function () {    
+    console.log('Express server listening on port 8080');
 });
 
 var storage = multer.diskStorage({
