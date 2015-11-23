@@ -92,7 +92,7 @@ function unZip(fileName){
 
 var linesArr =[];
 function getContent(singleInfPathName, cb){
-	console.log("getContent started");
+	//console.log("getContent started");
 	fs.readFile(__dirname+infsPath+singleInfPathName, function(err, data){
 		if (err) cb(err);
 		var dataEncoding = jschardet.detect(data).encoding;
@@ -104,12 +104,10 @@ function getContent(singleInfPathName, cb){
 }
 
 function getSection(infFileName, content){	
-	console.log("getSection started");	
-	var regex = /(?:\[Manufacturer\]\r\n)((^.+\r\n)+)/gm  //!!!!!!!!!!	
-	console.log(content.search(regex));
+	//console.log("getSection started");	
+	var regex = /(?:\[Manufacturer\]\r\n)((^.+\r\n)+)/gm 
+	
 	while(result = regex.exec(content)){		
-		console.log("Содержимое result[1]: "+result[1]);	
-		
 		var splitedStrArr = result[1].split(/\r\n/g);
 		for (n=0; n<splitedStrArr.length; n++){
 			if (splitedStrArr[n] !=""){				
