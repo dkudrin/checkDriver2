@@ -1,6 +1,7 @@
 var fs = require('fs');
-async = require("async");
+var async = require("async");
 var AdmZip = require('adm-zip');
+var jschardet = require("jschardet");
 var iconv = require('iconv-lite');
 var express = require('express');
 var path = require('path');
@@ -35,7 +36,6 @@ var storage = multer.diskStorage({
 }) 
 
 var upload = multer({ storage: storage });
-var encoding = "UTF-16LE"; //"CP-1252"  "cp1252"
 var uploadsPath = "uploads/";
 var infsPath = "/infs/";
 
@@ -43,22 +43,24 @@ app.get('/', function(req, res){
 	res.render('index');
 });
 
-var response;
-
-function sendResponse(ResponseObj){
-	//console.log(ResponseObj);		
-	var responseJSON = JSON.stringify(ResponseObj);
-	console.log("Response sending");	
-	response.write(responseJSON);			
-	response.end();			
-}
-
 app.post('/uploads', upload.array('inffile', 10), function(req, res){
 	response = res;
 	console.log(req.files);
 	fileName = req.files[req.files.length - 1]["filename"];
+
 	unZip(fileName, sendResponse);
 });
+
+var response;
+function sendResponse(ResponseObj){
+	//console.log(ResponseObj);		
+	var responseJSON = JSON.stringify(ResponseObj);
+	console.log("Response sending");	
+	response.write(responseJSON);
+	DriverObj = {};
+	linesArr =[];		
+	response.end();			
+}
 
 function unZip(fileName){
 	var zip = new AdmZip(uploadsPath+fileName);
@@ -93,7 +95,8 @@ function getContent(singleInfPathName, cb){
 	console.log("getContent started");
 	fs.readFile(__dirname+infsPath+singleInfPathName, function(err, data){
 		if (err) cb(err);
-		var content = iconv.decode(data, encoding).toString();
+		var dataEncoding = jschardet.detect(data).encoding;
+		var content = iconv.decode(data, dataEncoding).toString();
 		var infFileName = singleInfPathName.replace(/.+\//,"");	
 		getSection(infFileName, content);					
 		cb();
@@ -119,7 +122,6 @@ function getSection(infFileName, content){
 }
 
 var DriverObj = {};
-
 function buildDriverObj(infFileName, linesArr){
 	DriverObj[infFileName]={};
 	for(n=0; n<linesArr.length; n++){
