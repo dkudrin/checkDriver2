@@ -105,8 +105,7 @@ function getContent(singleInfPathName, cb){
 
 function getSection(infFileName, content){	
 	//console.log("getSection started");	
-	var regex = /(?:\[Manufacturer\]\r\n)((^.+\r\n)+)/gm 
-	
+	var regex = /(?:\[Manufacturer\]\r\n)((^.+\r\n)+)/gm 	
 	while(result = regex.exec(content)){		
 		var splitedStrArr = result[1].split(/\r\n/g);
 		for (n=0; n<splitedStrArr.length; n++){
@@ -116,7 +115,6 @@ function getSection(infFileName, content){
 		}		
 	}	
 	buildDriverObj(infFileName, linesArr);	
-	
 }
 
 var DriverObj = {};
@@ -130,8 +128,7 @@ function buildDriverObj(infFileName, linesArr){
 		OSPlatformArr.forEach(function(item, i, arr){
 			 var fullOsName = changeOsName(item.replace(/(^\s+|\s+$)/g,''));
 			 arr[i] = fullOsName;
-		}); // OS fullnames Array
-		
+		}); // OS fullnames Array		
 
 		if(DriverObj[infFileName][Manufacturer]){
 			if(DriverObj[infFileName][Manufacturer][Model]){
@@ -150,18 +147,14 @@ function buildDriverObj(infFileName, linesArr){
 			OSPlatformArr.forEach(function(item){
 				DriverObj[infFileName][Manufacturer][Model].push(item);
 			})
-
 		}
-	}
-
-	console.log(DriverObj[infFileName]);
+	}	
 }
 
  function changeOsName(osname){ 	
  	var osNameArr = osname.replace(/^NT/,'').toUpperCase().split(".");
  	var osArcVer = osNameArr[0];
- 	var osMajorVer = osNameArr[1];
- 	console.log("Arc and MajorV: "+osArcVer+" "+osMajorVer);
+ 	var osMajorVer = osNameArr[1]; 	
  	if (!osMajorVer){if ((osArcVer=="AMD64")||(osArcVer=="X86")) {osMajorVer = "64_86"}}; 	
  	osname = ArcVer[osArcVer]+": "+OsVer[osMajorVer];
  	return osname;
