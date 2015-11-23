@@ -47,13 +47,11 @@ app.post('/uploads', upload.array('inffile', 10), function(req, res){
 	response = res;
 	console.log(req.files);
 	fileName = req.files[req.files.length - 1]["filename"];
-
 	unZip(fileName, sendResponse);
 });
 
 var response;
 function sendResponse(ResponseObj){
-	//console.log(ResponseObj);		
 	var responseJSON = JSON.stringify(ResponseObj);
 	console.log("Response sending");	
 	response.write(responseJSON);
@@ -67,19 +65,16 @@ function unZip(fileName){
 	var zipEntries = zip.getEntries(); 
 	var entrysPathsArr =[];
 	zipEntries.forEach(function(zipEntry) {
-	    if (~zipEntry.entryName.search(/.inf$/ig)) {
-	    	console.log(zipEntry.rawEntryName+"  "+zipEntry.name);
+	    if (~zipEntry.entryName.search(/.inf$/ig)) {	    	
 	    	var singleInfPath = fileName.replace(/.zip/,'');    	 
-	        zip.extractEntryTo(zipEntry, __dirname+infsPath+singleInfPath, /*maintainEntryPath*/false, /*overwrite*/true);
-	        //console.log("Inf file: "+zipEntry.entryName+"\n extracted to: "+__dirname+infsPath+fileName);
+	        zip.extractEntryTo(zipEntry, __dirname+infsPath+singleInfPath, /*maintainEntryPath*/false, /*overwrite*/true);	        
 	        entrysPathsArr.push(singleInfPath+"/"+zipEntry.name);
 	    }
 	});	
 
 	async.each(entrysPathsArr, 
 		function(singleInfPathName, callback){
-			getContent(singleInfPathName, function(){
-				console.log("callback fired");
+			getContent(singleInfPathName, function(){				
 				callback();
 			});		 
 		}, 
@@ -92,7 +87,6 @@ function unZip(fileName){
 
 var linesArr =[];
 function getContent(singleInfPathName, cb){
-	//console.log("getContent started");
 	fs.readFile(__dirname+infsPath+singleInfPathName, function(err, data){
 		if (err) cb(err);
 		var dataEncoding = jschardet.detect(data).encoding;
@@ -104,7 +98,6 @@ function getContent(singleInfPathName, cb){
 }
 
 function getSection(infFileName, content){	
-	//console.log("getSection started");	
 	var regex = /(?:\[Manufacturer\]\r\n)((^.+\r\n)+)/gm 	
 	while(result = regex.exec(content)){		
 		var splitedStrArr = result[1].split(/\r\n/g);
@@ -128,8 +121,7 @@ function buildDriverObj(infFileName, linesArr){
 		OSPlatformArr.forEach(function(item, i, arr){
 			 var fullOsName = changeOsName(item.replace(/(^\s+|\s+$)/g,''));
 			 arr[i] = fullOsName;
-		}); // OS fullnames Array		
-
+		}); // OS fullnames Array	
 		if(DriverObj[infFileName][Manufacturer]){
 			if(DriverObj[infFileName][Manufacturer][Model]){
 				OSPlatformArr.forEach(function(item){
